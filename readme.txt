@@ -15,6 +15,7 @@ http://jeelabs.net/projects/cafe/wiki/EtherCard
 http://jeelabs.net/projects/cafe/wiki/Ports
 http://jeelabs.net/projects/cafe/wiki/RF12
 -----------------------------------------------
+The is a colaboration between OpenEnergyMonitor and Nanode (Ken Boak and London Hackspace) 
 
 This repo contains the firmware to allow a Nanode 5 equippted with a RFM12B break out board to received monitoring data from the emonTx and post the data online to emoncms. The Nanode also serves a local webpage with a copy of the last received data packet. 
 
