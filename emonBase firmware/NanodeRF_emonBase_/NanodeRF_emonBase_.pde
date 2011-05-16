@@ -3,9 +3,9 @@
 //  _ __   __ _ _ __   ___   __| | ___ 
 // | '_ \ / _` | '_ \ / _ \ / _` |/ _ \
 // | | | | (_| | | | | (_) | (_| |  __/
-// |_| |_|\__,_|_| |_|\___/ \__,_|\___|
+// |_| |_|\__,_|_| |_|\___/ \__,_|\___|RF
                                     
-//EMONBASE V1 > Relays wireless data received from emonTx to emoncms
+//emonBase V1 > Relays wireless data received from emonTx to emoncms
 //GNU GPL V3
 //By Trystan Lea and Glyn Hudson 
 //openenergymonitor.org
@@ -20,7 +20,7 @@
 // ethernet interface mac address
 static byte mymac[6] = { 0x54,0x55,0x58,0x10,0x00,0x26 };
 // ethernet interface ip address
-static byte myip[4] = { 192,168,1,100 };
+static byte myip[4] = { 192,168,1,100 };         //logon to this IP to view local webpage served by the Nanode 
 // gateway ip address
 static byte gwip[4] = { 192,168,1,1 };
 // remote website ip address, host name and port number
@@ -30,7 +30,7 @@ static byte hisip[4] = { 192,168,1,5 };
 static word hisport = 80;
 
 // fixed RF12 settings
-#define MYNODE 31            //node ID of nanode
+#define MYNODE 30            //node ID 30 reserved for base station
 #define freq RF12_433MHZ     //frequency
 #define group 212            //network group 
 
