@@ -18,15 +18,13 @@
 #include <RF12.h>
 
 // ethernet interface mac address
-static byte mymac[6] = { 0x54,0x55,0x58,0x10,0x00,0x26 };
+static byte mymac[6] = { 0x54,0x54,0x58,0x12,0x00,0x26 };
 // ethernet interface ip address
 static byte myip[4] = { 192,168,1,100 };         //logon to this IP to view local webpage served by the Nanode 
 // gateway ip address
 static byte gwip[4] = { 192,168,1,1 };
 // remote website ip address, host name and port number
 static byte hisip[4] = { 192,168,1,5 };
-  
-
 static word hisport = 80;
 
 // fixed RF12 settings
@@ -69,9 +67,12 @@ static word my_datafill_cb (byte fd) {
     // JSON Data to send
     //--------------------------------------------------------------
 
-  char host[11]="localhost";  //really needs to be define at top of sketch
-  bfill.emit_p(PSTR("{emontx_ID:$D,emontx_ctA:$D,emontx_ctB:$D,nPulse:$D,emontx_temp1:$D,emontx_V:$D}"),emontx_nodeID,emontx.ct1, emontx.ct2, emontx.nPulse, emontx.temp1,emontx.supplyV);
-  bfill.emit_p(PSTR(" HTTP/1.1\r\n" "Host: $F\r\n" "\r\n"),host);
+  //Comented out and replaced external decleration of host as it was causing a crash?
+  
+  //char host[11]="localhost";  //really needs to be define at top of sketch
+  bfill.emit_p(PSTR("{emontx_ID:$D,emontx_ctA:$D,emontx_ctB:$D,nPulse:$D,emontx_temp1:$D,emontx_temp2:$D,emontx_temp3:$D,emontx_V:$D}"),emontx_nodeID,emontx.ct1, emontx.ct2, emontx.nPulse, emontx.temp1,emontx.temp2,emontx.temp3,emontx.supplyV);
+  bfill.emit_p(PSTR(" HTTP/1.1\r\n" "Host: localhost\r\n" "\r\n"));
+  //bfill.emit_p(PSTR(" HTTP/1.1\r\n" "Host: $F\r\n" "\r\n"),host);
     
     return bfill.position();
 }
@@ -112,7 +113,7 @@ char okHeader[] PROGMEM =
 // Generate the local webpage
 //--------------------------------------------------------------------
 static void homePage(BufferFiller& buf) {
-    buf.emit_p(PSTR("$F\r\nRelaying JSON: {emontx_ID:$D,emontx_ctA:$D,emontx_ctB:$D,nPulse:$D,emontx_temp1:$D,emontx_V:$D}"),okHeader,emontx_nodeID,emontx.ct1, emontx.ct2, emontx.nPulse, emontx.temp1,emontx.supplyV);
+    buf.emit_p(PSTR("$F\r\nRelaying JSON: {emontx_ID:$D,emontx_ctA:$D,emontx_ctB:$D,nPulse:$D,emontx_temp1:$D,emontx_temp2:$D,emontx_temp3:$D,emontx_V:$D}"),okHeader,emontx_nodeID,emontx.ct1, emontx.ct2, emontx.nPulse,emontx.temp1,emontx.temp2,emontx.temp3,emontx.supplyV);
 }
 
 //--------------------------------------------------------------------
@@ -151,7 +152,7 @@ void loop () {
     // 2) Relay data on to emoncms
     //--------------------------------------------------------------------
     if (requestTimer.poll(5000)) {
-        (">>> REQ# ");
+        Serial.print(">>> REQ# ");
         byte id = eth.clientTcpReq(my_result_cb, my_datafill_cb, hisport);
         Serial.println((int) id);
     }
