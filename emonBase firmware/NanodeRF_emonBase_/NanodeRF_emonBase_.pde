@@ -50,7 +50,7 @@ int emontx_nodeID;    //node ID of emon tx, extracted from RF datapacket. Not tr
 //########################################################################################################################
 
 EtherCard eth;
-MilliTimer requestTimer;
+//MilliTimer requestTimer;
 
 static BufferFiller bufill;
 
@@ -85,6 +85,8 @@ static byte my_result_cb (byte fd, byte status, word off, word len) {
     return 0;
 }
 
+int recieved = 0;
+unsigned long lastupdate;
 //--------------------------------------------------------------------
 // SETUP
 //--------------------------------------------------------------------
@@ -100,7 +102,8 @@ void setup () {
     
     rf12_initialize(MYNODE, freq,group);
   
-    requestTimer.set(1); // send first request as soon as possible
+    // Timer replaced with millis timer
+    //requestTimer.set(1); // send first request as soon as possible
 }
     
 char okHeader[] PROGMEM = 
@@ -142,16 +145,21 @@ void loop () {
     //--------------------------------------------------------------------
     if (rf12_recvDone() && rf12_crc == 0 && (rf12_hdr & RF12_HDR_CTL) == 0 && rf12_len==sizeof(Payload) ) {
         emontx=*(Payload*) rf12_data;   
+        emontx_nodeID=rf12_hdr & 0x1F;   //extract node ID from received packet 
+        Serial.println(emontx.temp1);
+        recieved = 1;
     }
     
-    emontx_nodeID=rf12_hdr & 0x1F;   //extract node ID from received packet 
+
         
     if (eth.clientWaitingGw()) return;
     
     //--------------------------------------------------------------------
     // 2) Relay data on to emoncms
     //--------------------------------------------------------------------
-    if (requestTimer.poll(5000)) {
+    if ((millis()-lastupdate)>20000 || recieved == 1) {
+        lastupdate = millis();
+        recieved = 0;
         Serial.print(">>> REQ# ");
         byte id = eth.clientTcpReq(my_result_cb, my_datafill_cb, hisport);
         Serial.println((int) id);
