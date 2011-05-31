@@ -8,6 +8,8 @@
 //emonBase V1 > Relays wireless data received from emonTx to emoncms
 //GNU GPL V3
 //By Trystan Lea and Glyn Hudson 
+
+//www.nanode.eu
 //openenergymonitor.org
 
 //Thanks to Jcw at JeeLabs.org for the RF12, Ports and EtherCard library 
@@ -94,6 +96,12 @@ void setup () {
     Serial.begin(57600);
     Serial.println("Nanode: emonTx relay");
     
+    //print out Nanode local IP
+   char ipaddr[18];
+   mk_net_str(ipaddr,myip,4,'.',10);  // convert 4 bytes to base10 ascii string
+   Serial.print("My IP: ");
+   Serial.println(ipaddr);  // for example, "My IP: 10.0.0.1"
+   
     eth.spiInit();
     eth.initialize(mymac);
     eth.initIp(mymac, myip, 80);
