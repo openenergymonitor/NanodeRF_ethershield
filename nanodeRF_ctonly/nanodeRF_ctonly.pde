@@ -81,13 +81,18 @@ void setup()
 {
   Serial.begin(9600);
   Serial.println("Emonbase:NanodeRF ctonly");
+  Serial.print("Node: "); Serial.print(MYNODE); 
+  Serial.print(" Freq: "); Serial.print("433Mhz"); 
+  Serial.print(" Network group: "); Serial.println(group);
+  Serial.print("Posting to "); printIP(server); Serial.print(" "); Serial.println(HOST);
+
   
   ethernet_setup_dhcp(mac,server,80,8); // Last two: PORT and SPI PIN: 8 for Nanode, 10 for nuelectronics
   
   rf12_initialize(MYNODE, freq,group);
   lastRF = millis()-40000;                                        // setting lastRF back 40s is useful as it forces the ethernet code to run straight away
                                                                   // which means we dont have to wait to see if its working
-  pinMode(6, OUTPUT); digitalWrite(6,HIGH);                       // Nanode indicator LED setup
+  pinMode(6, OUTPUT); digitalWrite(6,LOW);                       // Nanode indicator LED setup, HIGH means off! if LED lights up indicates that Etherent and RFM12 has been initialize
 }
 
 //-----------------------------------------------------------------------
@@ -95,13 +100,13 @@ void setup()
 //-----------------------------------------------------------------------
 void loop()
 {
-
+digitalWrite(6,HIGH);    //turn inidicator LED off! yes off! input gets inverted by buffer
   //---------------------------------------------------------------------
   // On data receieved from rf12
   //---------------------------------------------------------------------
   if (rf12_recvDone() && rf12_crc == 0 && (rf12_hdr & RF12_HDR_CTL) == 0) 
   {
-    digitalWrite(6,HIGH);                                         // Flash LED on recieve ON
+    digitalWrite(6,LOW);                                         // Flash LED on recieve ON
     emontx=*(Payload*) rf12_data;                                 // Get the payload
     
     // JSON creation: JSON sent are of the format: {key1:value1,key2:value2} and so on
@@ -112,7 +117,7 @@ void loop()
 
     dataReady = 1;                                                // Ok, data is ready
     lastRF = millis();                                            // reset lastRF timer
-    digitalWrite(6,LOW);                                          // Flash LED on recieve OFF
+    digitalWrite(6,HIGH);                                          // Flash LED on recieve OFF
   }
   
   // If no data is recieved from rf12 module the server is updated every 30s with RFfail = 1 indicator for debugging

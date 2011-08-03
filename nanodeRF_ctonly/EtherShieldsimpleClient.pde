@@ -27,7 +27,7 @@
 //   Licence: GPL GNU v3
 //--------------------------------------------------------
 
-#define DEBUG
+//#define DEBUG
 
 int data_recieved = 0;
 
@@ -383,3 +383,5 @@ int reply_recieved()
 {
   return data_recieved;
 }
+
+
