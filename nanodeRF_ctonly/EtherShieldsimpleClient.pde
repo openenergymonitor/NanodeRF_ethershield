@@ -27,7 +27,7 @@
 //   Licence: GPL GNU v3
 //--------------------------------------------------------
 
-//#define DEBUG
+#define DEBUG
 
 int data_recieved = 0;
 

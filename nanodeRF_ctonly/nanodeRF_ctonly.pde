@@ -28,7 +28,7 @@
 
 #define MYNODE 35            // node ID 30 reserved for base station
 #define freq RF12_433MHZ     // frequency
-#define group 215            // network group 
+#define group 210            // network group 
 
 // The RF12 data payload - a neat way of packaging data when sending via RF - JeeLabs
 typedef struct
@@ -64,9 +64,9 @@ PacketBuffer str;
 //---------------------------------------------------------------------
 #include <EtherShield.h>
 byte mac[6] =     { 0x04,0x13,0x31,0x13,0x05,0x22};           // Unique mac address - must be unique on your local network
-#define HOST ""                                                   // Blank "" if on your local network: www.yourdomain.org if not
-#define API "/emoncms2/api/post?apikey=57ec0f95a0a4cdba96b6aa36ee9fd7bb&json="  // Your api url including APIKEY
-byte server[4] = {192,168,1,5};                                   // Server IP
+#define HOST "dev.openenergymonitor.org"                                                   // Blank "" if on your local network: www.yourdomain.org if not
+#define API "/emoncms2/api/post?apikey=3a8c212513f1a6d8c68bcc88d7f025ad&json="  // Your api url including APIKEY
+byte server[4] = {85,92,86,84};                                   // Server IP
 //---------------------------------------------------------------------
 
 // Flow control varaiables
