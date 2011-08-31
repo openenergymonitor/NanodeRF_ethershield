@@ -108,6 +108,7 @@ digitalWrite(6,HIGH);    //turn inidicator LED off! yes off! input gets inverted
   {
     digitalWrite(6,LOW);                                         // Flash LED on recieve ON
     emontx=*(Payload*) rf12_data;                                 // Get the payload
+    // emontx_nodeID=rf12_hdr & 0x1F;   //extract node ID from received packet 
     
     // JSON creation: JSON sent are of the format: {key1:value1,key2:value2} and so on
     str.reset();                                                  // Reset json string      
