@@ -64,9 +64,9 @@ PacketBuffer str;
 //---------------------------------------------------------------------
 #include <EtherShield.h>
 byte mac[6] =     { 0x04,0x13,0x31,0x13,0x05,0x22};           // Unique mac address - must be unique on your local network
-#define HOST "dev.openenergymonitor.org"                                                   // Blank "" if on your local network: www.yourdomain.org if not
-#define API "/emoncms2/api/post?apikey=3a8c212513f1a6d8c68bcc88d7f025ad&json="  // Your api url including APIKEY
-byte server[4] = {85,92,86,84};                                   // Server IP
+#define HOST "YOUR URL"                                                   // Blank "" if on your local network: www.yourdomain.org if not
+#define API "/emoncms2/api/post?apikey=XXXXXXXXXXXXXXXXXXXX&json="  // Your api url including APIKEY
+byte server[4] = {00,00,00,00};                                   // Server IP                               // Server IP
 //---------------------------------------------------------------------
 
 // Flow control varaiables
