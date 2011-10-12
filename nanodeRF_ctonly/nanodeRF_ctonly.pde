@@ -17,9 +17,9 @@
 // openenergymonitor.org
 // GNU GPL V3
 
-// Last update: 2nd of August 2011
+// Last update: 12th of November 2011
 //--------------------------------------------------------------------------------------
-
+#define DEBUG
 //---------------------------------------------------------------------
 // RF12 link - JeeLabs
 //---------------------------------------------------------------------
@@ -64,8 +64,8 @@ PacketBuffer str;
 //---------------------------------------------------------------------
 #include <EtherShield.h>
 byte mac[6] =     { 0x04,0x13,0x31,0x13,0x05,0x22};           // Unique mac address - must be unique on your local network
-#define HOST "YOUR URL"                                                   // Blank "" if on your local network: www.yourdomain.org if not
-#define API "/emoncms2/api/post?apikey=XXXXXXXXXXXXXXXXXXXX&json="  // Your api url including APIKEY
+#define HOST ""                                                   // Blank "" if on your local network: www.yourdomain.org if not
+#define API "/emoncms2/api/post?apikey=XXXXXXXXXXXX&json="  // Your api url including APIKEY
 byte server[4] = {00,00,00,00};                                   // Server IP
 //---------------------------------------------------------------------
 
@@ -112,9 +112,9 @@ digitalWrite(6,HIGH);    //turn inidicator LED off! yes off! input gets inverted
     
     // JSON creation: JSON sent are of the format: {key1:value1,key2:value2} and so on
     str.reset();                                                  // Reset json string      
-    str.print("{RFfail01:0,");                                    // RF recieved so no failure
-    str.print("nanode01_ct:");    str.print(emontx.ct1);          // Add CT 1 reading 
-    str.print(",nanode01_v:");    str.print(emontx.supplyV);      // Add Emontx battery voltage reading
+    str.print("{rf_fail:0,");                                    // RF recieved so no failure
+    str.print("ct1:");    str.print(emontx.ct1);          // Add CT 1 reading 
+    str.print(",battery:");    str.print(emontx.supplyV);      // Add Emontx battery voltage reading
 
     dataReady = 1;                                                // Ok, data is ready
     lastRF = millis();                                            // reset lastRF timer
@@ -126,7 +126,7 @@ digitalWrite(6,HIGH);    //turn inidicator LED off! yes off! input gets inverted
   {
     lastRF = millis();                                            // reset lastRF timer
     str.reset();                                                  // reset json string
-    str.print("{RFfail01:1");                                       // No RF received in 30 seconds so send failure 
+    str.print("{rf_fail:1");                                       // No RF received in 30 seconds so send failure 
     dataReady = 1;                                                // Ok, data is ready
   }
   
@@ -136,11 +136,16 @@ digitalWrite(6,HIGH);    //turn inidicator LED off! yes off! input gets inverted
   if (ethernet_ready_dhcp() && dataReady==1)                      // If ethernet and data is ready: send data
   {
     if (reply_recieved()==0) post_count++; else post_count = 0;   // Counts number of times a reply was not recieved
-    str.print(",POSTfail01:"); str.print(post_count); str.print("}\0");// Posts number of times a reply was not recieved
+    str.print(",post_fail:"); str.print(post_count); str.print("}\0");// Posts number of times a reply was not recieved
+    #ifdef DEBUG
     Serial.print(str.buf);                                        // Print final json string to terminal
+    #endif
     
     ethernet_send_url(PSTR(HOST),PSTR(API),str.buf);              // Send the data via ethernet
-    Serial.println("sent"); dataReady = 0;                        // reset dataReady
+    #ifdef DEBUG
+    Serial.println("sent"); 
+    #endif
+    dataReady = 0;                        // reset dataReady
   }
   
 }
