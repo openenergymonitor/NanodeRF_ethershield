@@ -51,7 +51,7 @@ public:
       memset(buf,NULL,sizeof(buf));
       fill = 0; 
     }
-    virtual void write(uint8_t ch)
+    virtual size_t write(uint8_t ch)
         { if (fill < sizeof buf) buf[fill++] = ch; }
     byte fill;
     char buf[150];
