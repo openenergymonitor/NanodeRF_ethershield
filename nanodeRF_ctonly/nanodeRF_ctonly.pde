@@ -121,7 +121,7 @@ void setup()
   Serial.print(" Network group: "); Serial.println(group);
   Serial.print("Posting to "); printIP(server); Serial.print(" "); Serial.println(HOST);
 
-  ethernet_setup_dhcp(mac,server,80,8); // Last two: PORT and SPI PIN: 8 for Nanode, 10 for nuelectronics
+//  ethernet_setup_dhcp(mac,server,80,8); // Last two: PORT and SPI PIN: 8 for Nanode, 10 for nuelectronics*/
   mymac = mac;
   es.ES_enc28j60SpiInit();
   es.ES_enc28j60Init(mac,8);
