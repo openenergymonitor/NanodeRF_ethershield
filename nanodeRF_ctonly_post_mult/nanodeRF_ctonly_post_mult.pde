@@ -56,7 +56,7 @@ byte server2[4] = {00,00,00,00};                                   // Server IP
 int dataReady=0;                                                  // is set to 1 when there is data ready to be sent
 unsigned long lastRF;                                             // used to check for RF recieve failures
 
-int server_id = 1;                                                // Send data to server 1 first
+int state = 0;                                                // Send data to server 1 first
 
 //---------------------------------------------------------------------
 // Setup
@@ -67,7 +67,6 @@ void setup()
   Serial.println("Nanode sending to multiple servers");
 
   ethernet_setup_dhcp(mac,80,8); // Last two: PORT and SPI PIN: 8 for Nanode, 10 for nuelectronics
-   
   lastRF = millis()-40000;
 }
 
@@ -76,34 +75,41 @@ void setup()
 //-----------------------------------------------------------------------
 void loop()
 {
-  if ((millis()-lastRF)>2000)
+  if ((millis()-lastRF)>5000)
   {
     lastRF = millis();                                            // reset timer
     
     str.reset(); str.print("{test:123.4}\0");
     Serial.print(str.buf);
     
-    dataReady = 1;                                                // Ok, data is ready
-    
-    server_id ++; if (server_id>2) server_id = 1;
-    if (server_id == 1) ethernet_set_server(server1);
-    if (server_id == 2) ethernet_set_server(server2);
+    state = 1;
   }
   
-  if (ethernet_ready_dhcp() && dataReady==1 && server_id==1)
+  if (state==1) 
+  { 
+    Serial.println("Setting ip to server 1");
+    ethernet_set_server(server1); state = 2; 
+  }
+  
+  if (ethernet_ready_dhcp() && state==2)
   {
     Serial.println("Sending to server 1");
     ethernet_send_url(PSTR(HOST1),PSTR(API1),str.buf);
-    dataReady = 0;
+    state = 3;
+  }
+
+  if (state==3 && reply_recieved())
+  {
+    Serial.println("Setting ip to server 2");
+    state = 4;
+    ethernet_set_server(server2);
   }
   
-  if (ethernet_ready_dhcp() && dataReady==1 && server_id==2)
+  if (ethernet_ready_dhcp() && state==4)
   {
     Serial.println("Sending to server 2");
     ethernet_send_url(PSTR(HOST2),PSTR(API2),str.buf);
-    dataReady = 0;
-  }
-  
+    state = 0;
+  } 
 }
-
 
