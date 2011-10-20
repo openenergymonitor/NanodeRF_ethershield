@@ -29,7 +29,7 @@
 
 #define DEBUG
 
-int data_recieved = 0;
+/*int data_recieved = 0;
 
 byte* mymac;
 static uint8_t myip[4] =      { 0,0,0,0 };
@@ -52,7 +52,7 @@ int port;
 
 long lastDnsRequest = 0L;
 
-static int8_t dns_state=DNS_STATE_INIT;
+static int8_t dns_state=DNS_STATE_INIT;*/
 
 void printIP( uint8_t *buf ) {
   for( int i = 0; i < 4; i++ ) {
