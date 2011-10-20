@@ -374,6 +374,7 @@ void browserresult_callback(uint8_t statuscode,uint16_t datapos)
       Serial.print(buf[pos]);
       pos++;
     }
+    Serial.println();
     #endif
     data_recieved = 1;
   }
