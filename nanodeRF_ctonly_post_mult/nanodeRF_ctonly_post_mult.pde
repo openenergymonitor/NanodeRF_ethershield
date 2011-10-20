@@ -72,7 +72,7 @@ int dataReady=0;                                                  // is set to 1
 unsigned long lastRF;                                             // used to check for RF recieve failures
 int post_count;
 
-int server_id = 1;                                                // Send data to server 1 first
+int state = 0;                                                    // Send data to server 1 first
 
 //---------------------------------------------------------------------
 // Setup
@@ -98,7 +98,7 @@ void setup()
 //-----------------------------------------------------------------------
 void loop()
 {
-  if ((millis()-lastRF)>2000)
+  if ((millis()-lastRF)>5000)
   {
     if (rf12_recvDone() && rf12_crc == 0 && (rf12_hdr & RF12_HDR_CTL) == 0) 
     {
@@ -115,7 +115,7 @@ void loop()
       postval.print("auth_token=QfDwhcf3QAc2Reezwba5&electra=");
       postval.print(emontx.ct1);
 
-      dataReady = 1;                                                // Ok, data is ready
+      state = 1;
       lastRF = millis();                                            // reset lastRF timer
       digitalWrite(6,HIGH);                                          // Flash LED on recieve OFF
     }
@@ -126,13 +126,17 @@ void loop()
       lastRF = millis();                                            // reset lastRF timer
       str.reset();                                                  // reset json string
       str.print("{RFfail01:1");                                       // No RF received in 30 seconds so send failure 
-      dataReady = 1;                                                // Ok, data is ready
+      state = 1;                                            // Ok, data is ready
     }
   }
 
-  ethernet_set_server(server1);
+  if (state==1) 
+  { 
+    Serial.println("Setting ip to server 1");
+    ethernet_set_server(server1); state = 2; 
+  }
 
-  if (ethernet_ready_dhcp() && dataReady==1)
+  if (ethernet_ready_dhcp() && state == 2 )
   {
     if (reply_recieved()==0) post_count++; else post_count = 0;   // Counts number of times a reply was not recieved
     str.print(",POSTfail01:"); str.print(post_count); str.print("}\0");// Posts number of times a reply was not recieved
@@ -141,16 +145,23 @@ void loop()
     Serial.println(str.buf);    // Print final json string to terminal
 
     ethernet_send_url(PSTR(HOST1),PSTR(API1),str.buf);
-
-    ethernet_set_server(server2);
-    if (ethernet_ready_dhcp())
-    {
-      Serial.println("Sending to server 2");
-      Serial.println(postval.buf);
-      ethernet_send_post(PSTR(API2), PSTR(HOST2), NULL, NULL, postval.buf);
-    }
-
-    dataReady = 0;
+    state = 3;
   }
+
+  if (state==3 && reply_recieved())
+  {
+    Serial.println("Setting ip to server 2");
+    state = 4;
+    ethernet_set_server(server2);
+  }
+
+  if (ethernet_ready_dhcp() && state==4)
+  {
+    Serial.println("Sending to server 2");
+    Serial.println(postval.buf);
+    ethernet_send_post(PSTR(API2), PSTR(HOST2), NULL, NULL, postval.buf);
+    state = 0;
+  }
+
 }
 
