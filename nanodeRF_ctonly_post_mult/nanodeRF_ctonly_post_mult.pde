@@ -18,6 +18,12 @@
 #include <Ports.h>
 #include <RF12.h>
 
+// Include a watchdog, to watch stalling ethernet connections
+// The uno (optiboot) bootloader must be used !!
+// See http://jeelabs.org/2010/06/09/repairing-a-faulty-atmega/ using a JeeNode as ISP programmes
+// with the isp_repair2 sketch http://jeelabs.net/projects/cafe/repository/show/Ports/examples/isp_repair2
+#include <avr/wdt.h>
+
 #define MYNODE 35            // node ID 30 reserved for base station
 #define freq RF12_433MHZ     // frequency
 #define group 210            // network group 
@@ -91,6 +97,7 @@ void setup()
   lastRF = millis()-40000;                                        // setting lastRF back 40s is useful as it forces the ethernet code to run straight away
 
   pinMode(6, OUTPUT); digitalWrite(6,LOW);                       // Nanode indicator LED setup, HIGH means off! if LED lights up indicates that Etherent and RFM12 has been initialize
+  wdt_enable(WDTO_8S);
 }
 
 //-----------------------------------------------------------------------
@@ -98,6 +105,7 @@ void setup()
 //-----------------------------------------------------------------------
 void loop()
 {
+  wdt_reset();
   if ((millis()-lastRF)>5000)
   {
     if (rf12_recvDone() && rf12_crc == 0 && (rf12_hdr & RF12_HDR_CTL) == 0) 
